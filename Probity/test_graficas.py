@@ -17,9 +17,9 @@ def probar_grafico_binomial():
     Esta función prueba la lógica de la binomial y muestra el gráfico.
     """
     # 1. Define los parámetros de prueba
-    n_test = 80
+    n_test = 200
     p_test = 0.6
-    k_test = 10
+    k_test = 100
     print(f"Probando la función binomial con n={n_test}, p={p_test}, k={k_test}...")
 
     # 2. Llama a la función del servicio (igual que lo haría la vista)

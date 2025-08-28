@@ -49,11 +49,12 @@ puntos_x=[x_recibido]
 puntos_y=[y_recibido]
 for cont in range(iteraciones):
     #print("\nResultados de la iteracion ",cont+1)
-    r=random.uniform(0, 1)
+    r1=random.uniform(0, 1)
+    r2=random.uniform(0, 1)
     #print("Valor de rand : ",r)
     #print("Valores actuales : x :",x_recibido," y :",y_recibido)
-    x_i=f_x_i.subs({y: y_recibido, u: r})
-    y_i=f_y_i.subs({x: x_recibido, u: r})
+    x_i=f_x_i.subs({y: y_recibido, u: r1})
+    y_i=f_y_i.subs({x: x_recibido, u: r2})
 
     #print("x",cont+1," :", x_i)
     #print("y",cont+1," :", y_i)
@@ -65,42 +66,4 @@ for cont in range(iteraciones):
 
 #print("\nPuntos x : ",puntos_x)
 #print("Puntos y : ",puntos_y)
-
-
-#histograma 3D
-import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-
-puntos_x = [float(px) for px in puntos_x]  # asegurar que sean floats
-puntos_y = [float(py) for py in puntos_y]
-
-# definimos el número de bins (puedes cambiarlo según quieras más detalle)
-bins = 10
-
-# calculamos histograma bidimensional
-H, xedges, yedges = np.histogram2d(puntos_x, puntos_y, bins=bins)
-
-# coordenadas para el gráfico 3D
-xpos, ypos = np.meshgrid(xedges[:-1], yedges[:-1], indexing="ij")
-xpos = xpos.ravel()
-ypos = ypos.ravel()
-zpos = np.zeros_like(xpos)
-
-# tamaño de las barras
-dx = (xedges[1] - xedges[0]) * np.ones_like(zpos)
-dy = (yedges[1] - yedges[0]) * np.ones_like(zpos)
-dz = H.ravel()
-
-# graficamos
-fig = plt.figure(figsize=(8,6))
-ax = fig.add_subplot(111, projection="3d")
-
-ax.bar3d(xpos, ypos, zpos, dx, dy, dz, shade=True)
-
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Frecuencia')
-
-plt.show()
 
