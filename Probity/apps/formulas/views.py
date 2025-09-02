@@ -41,6 +41,7 @@ class NormalFormulaView(APIView):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
 class BernoulliFormulaView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = BernoulliInputSerializer(data=request.data)

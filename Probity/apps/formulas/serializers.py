@@ -20,7 +20,6 @@ class NormalInputSerializer(serializers.Serializer):
 class BernoulliInputSerializer(serializers.Serializer):
     p = serializers.FloatField(min_value=0, max_value=1, help_text="Probabilidad de éxito")
     n = serializers.IntegerField(min_value=1)
-    
 
 class MultinomialInputSerializer(serializers.Serializer):
     n = serializers.IntegerField(min_value=1)

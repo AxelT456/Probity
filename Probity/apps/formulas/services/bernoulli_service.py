@@ -12,7 +12,7 @@ def run_bernoulli_trial(p: float, n:int) -> dict:
     sucesion=[]
     exts=0
     frcss=0
-    #Repetir el experimento n veces
+    #Repetir el experimento n vece
     for x in range(n):
         if random.uniform(0, 1)<p:
             sucesion.append("E")
