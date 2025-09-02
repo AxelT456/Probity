@@ -1,7 +1,7 @@
 # multinomial_service.py
 from .utils import factorial
 import math
-
+#ver tema de la simulacion
 def calculate_multinomial_pmf(n: int, outcomes: list[int], probabilities: list[float]) -> float:
     """
     Calcula la probabilidad de una combinación específica en un experimento multinomial.

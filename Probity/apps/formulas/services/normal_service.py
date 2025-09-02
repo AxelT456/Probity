@@ -1,5 +1,6 @@
 import math
 import numpy as np
+#ver tema de la simulacion
 
 def calculate_normal_pdf(z: float) -> float:
     """

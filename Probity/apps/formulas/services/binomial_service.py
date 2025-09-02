@@ -1,6 +1,6 @@
 from .utils import combinations
 import math  
-
+#Ver tema de la simlacion
 def calculate_binomial_pmf(n:int, p:float, k:int) -> float:
     """
     Calcula la Función de Masa de Probabilidad (Puntual) para P(X=k)

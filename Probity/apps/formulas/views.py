@@ -45,9 +45,12 @@ class BernoulliFormulaView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = BernoulliInputSerializer(data=request.data)
         if serializer.is_valid():
-            p = serializer.validated_data['p']
+            data = serializer.validated_data
             try:
-                full_data = get_bernoulli_data(p=p)
+                full_data = get_bernoulli_data(
+                    p=data['p'],
+                    n=data['n'] 
+                )
                 return Response(full_data, status=status.HTTP_200_OK)
             except ValueError as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
