@@ -12,6 +12,12 @@ def calculate_normal_pdf(z: float) -> float:
     e = math.e
     return (1/ math.sqrt(2*pi)) * (e**(-0.5 * z**2))
 
+def calculate_normal_cdf(z: float) -> float:
+    """
+    Calcula la Función de Distribución Acumulada (CDF) para un z-score.
+    """
+    return 0.5 * (1 + math.erf(z / math.sqrt(2)))
+
 def get_normal_standard_data(z_score: float) -> dict:
     """
     Prepara el diccionario completo con todos los datos para la API
@@ -40,6 +46,34 @@ def get_normal_standard_data(z_score: float) -> dict:
                 "z": z_score,
                 "pdf": pdf_at_z
             }
+        }
+    }
+    return response_data
+
+
+def get_normal_cdf_data(z_score: float) -> dict:
+    cdf_value = calculate_normal_cdf(z_score) # Reutilizamos la función que ya teníamos
+
+    x_range = np.arange(-4.0, 4.1, 0.1).tolist()
+    y_range_pdf = [calculate_normal_pdf(z) for z in x_range]
+
+    # 3. Ensamblar la respuesta JSON
+    response_data = {
+        "metadata": {
+            "formula": "Función de Distribución Acumulada (CDF) - Normal Estándar",
+            "parameters": {"z_score": z_score}
+        },
+        "result": {
+            "cdf": cdf_value,
+            "area_description": f"El {cdf_value:.2%} del área se encuentra a la izquierda de Z={z_score}"
+        },
+        "graph_data": {
+            "title": f"Área Acumulada para Z = {z_score}",
+            "x_label": "Z-score",
+            "y_label": "Densidad",
+            "x_range": x_range,
+            "y_range": y_range_pdf,
+            "shaded_area_limit": z_score
         }
     }
     return response_data
