@@ -26,6 +26,7 @@ def calculate_binomial_cdf(n: int, p:float, k:int)-> float:
 def get_binomial_data(n: int, p: float, k:int) -> dict:
         """
         Prepara el diccionario completo con todos los datos y puntos para el grafico
+        n=ensayos, p=probabilidad, k=exitos observados (aplica solo teorico)
         """
         #1.- Se calculan los resultados para el 'k' daddo
         pmf_at_k = calculate_binomial_pmf(n, p, k)
