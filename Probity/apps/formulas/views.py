@@ -67,9 +67,9 @@ class MultinomialFormulaView(APIView):
             try:
                 full_data = get_multinomial_data(
                     n=data['n'],
-                    outcomes=data['outcomes'],
-                    probabilities=data['probabilities'],
-                    labels=data['category_labels']
+                    k=data['k'],
+                    probabilities=data['probabilities']
+                    #labels=data['category_labels']
                 )
                 return Response(full_data, status=status.HTTP_200_OK)
             except ValueError as e:
