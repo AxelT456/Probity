@@ -25,7 +25,7 @@ def get_binomial_data(n: int, p: float, k:int) -> dict:
         n=ensayos, p=probabilidad, k=exitos observados (aplica solo teorico)
         """
         #2.- Se preparan los puntos para el grafico
-        x_points = list(range(n + 1))
+        x_points = list(range(k + 1))
         #1 Simular datos
         simulacion=simular(n,p,k)
         # 4. Ensamblar la estructura de respuesta completa
