@@ -66,10 +66,10 @@ class MultinomialFormulaView(APIView):
             data = serializer.validated_data
             try:
                 full_data = get_multinomial_data(
-                    n=data['n'],
-                    k=data['k'],
-                    probabilities=data['probabilities']
-                    #labels=data['category_labels']
+                    num_experiments=data['num_experiments'],
+                    num_trials=data['num_trials'],
+                    probabilities=data['probabilities'],
+                    labels=data['category_labels'] # <-- Ahora pasamos las etiquetas
                 )
                 return Response(full_data, status=status.HTTP_200_OK)
             except ValueError as e:

@@ -22,17 +22,20 @@ class BernoulliInputSerializer(serializers.Serializer):
     n = serializers.IntegerField(min_value=1)
 
 class MultinomialInputSerializer(serializers.Serializer):
-    n = serializers.IntegerField(min_value=1)
-    k = serializers.IntegerField(min_value=1)
+    num_experiments = serializers.IntegerField(min_value=1, help_text="Número de simulaciones a correr")
+    num_trials = serializers.IntegerField(min_value=1, help_text="Número de ensayos por experimento (ej. lanzamientos de dado)")
     probabilities = serializers.ListField(child=serializers.FloatField(min_value=0, max_value=1))
-    #category_labels = serializers.ListField(child=serializers.CharField(max_length=100))
+    category_labels = serializers.ListField(child=serializers.CharField(max_length=100))
 
     def validate(self, data):
-        k = data['k']
         probabilities = data['probabilities']
-        #labels = data['category_labels']
+        labels = data['category_labels']
 
-        # 3. Verificar que la suma de las probabilidades sea 1
+        # Validar que las listas de probabilidades y etiquetas tengan el mismo tamaño
+        if len(probabilities) != len(labels):
+            raise serializers.ValidationError("Las listas 'probabilities' y 'category_labels' deben tener el mismo tamaño.")
+
+        # Validar que la suma de las probabilidades sea 1
         if not math.isclose(sum(probabilities), 1.0):
             raise serializers.ValidationError(f"La suma de 'probabilities' ({sum(probabilities)}) debe ser igual a 1.")
 

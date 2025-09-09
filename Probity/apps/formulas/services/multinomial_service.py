@@ -1,86 +1,75 @@
-# multinomial_service.py
-from .utils import factorial
 import random
+from collections import Counter
 
-#ver tema de la simulacion
-def calculate_multinomial_pmf(n: int, k: int, probabilities: list[float]) -> dict:
+def run_multinomial_simulation(num_experiments: int, num_trials: int, probabilities: list[float]) -> list[tuple]:
     """
-    Simula n experimentos de k repeticiones cada uno con probabilidades dadas.
-    Devuelve una lista de diccionarios con la frecuencia de cada resultado.
+    Simula n experimentos de k ensayos cada uno. Devuelve una lista de vectores de resultado.
+    (Esta función no necesita cambios)
     """
-    cumulative = []
+    cumulative_probs = []
     total = 0
     for p in probabilities:
-        cumulative.append(total + p)
         total += p
-    sucesion = []
-    for i in range(n):  # ciclo general de número de experimentos
-        rangos = {str(j+1): 0 for j in range(len(cumulative))}  # inicializar conteos
+        cumulative_probs.append(total)
 
-        for y in range(k):  # ciclo interno de repeticiones del experimento
-            for z in range(len(cumulative)):
-                if random.uniform(0, 1) < cumulative[z]:
-                    rangos[str(z+1)] += 1
+    all_outcome_vectors = []
+    num_categories = len(probabilities)
+
+    for _ in range(num_experiments):
+        outcome_counts = [0] * num_categories
+        for _ in range(num_trials):
+            rand_num = random.uniform(0, 1)
+            for i, cum_prob in enumerate(cumulative_probs):
+                if rand_num < cum_prob:
+                    outcome_counts[i] += 1
                     break
-        sucesion.append(rangos.copy())
-    return {"vectores":sucesion}
+        all_outcome_vectors.append(tuple(outcome_counts))
+        
+    return all_outcome_vectors
 
-def analyze_vector_frequencies(simulation_results):
-    vectors = []
-    for sim in simulation_results:
-        vectors.append(tuple(sim.values()))
-    
-    # Contar frecuencias
-    from collections import Counter
-    vector_counts = Counter(vectors)
-    
-    # Crear matriz para heatmap
-    unique_vectors = list(vector_counts.keys())
-    heatmap_matrix = []
-    # Dynamically use all keys present in sim, sorted for consistency
-    if simulation_results:
-        keys = sorted(simulation_results[0].keys(), key=lambda x: int(x))
-    else:
-        keys = []
-    for vector in unique_vectors:
-        row = [1 if tuple(sim[k] for k in keys) == vector else 0 
-               for sim in simulation_results]
-        heatmap_matrix.append(row)
-    
-    return vector_counts, heatmap_matrix
+def get_multinomial_data(num_experiments: int, num_trials: int, probabilities: list[float], labels: list[str]) -> dict:
+    """
+    Prepara el diccionario completo con los datos formateados para un
+    GRÁFICO DE BARRAS HORIZONTAL, según el componente ResultsChart.vue.
+    """
+    # 1. Ejecutar la simulación
+    simulation_results = run_multinomial_simulation(num_experiments, num_trials, probabilities)
+    vector_counts = Counter(simulation_results)
+    most_common_vectors = vector_counts.most_common(20)
+    most_frequent = most_common_vectors[0] if most_common_vectors else ((), 0)
 
-def get_multinomial_data(n: int, k: int, probabilities: list[float]) -> dict:
-    """
-    Prepara el diccionario completo con todos los datos para la API.
-    n:numero de experimentos, k: numero de veces por experimento
-    probabilities: probabilidades dadas (son hasta n)
-    """
-    vectores = calculate_multinomial_pmf(n, k, probabilities)
-    cosas = analyze_vector_frequencies(vectores["vectores"])
-    # Convert tuple keys to strings for JSON serialization
-    vector_counts_str = {str(k): v for k, v in cosas[0].items()}
+    # --- CAMBIO AQUÍ: Adaptamos los datos para un gráfico de barras ---
+    bar_chart_labels = []
+    bar_chart_data = []
+    for outcome_vector, count in most_common_vectors:
+        bar_chart_labels.append(str(outcome_vector))
+        bar_chart_data.append(count)
+    
+    # --- FIN DEL CAMBIO ---
+
+    # 3. Ensamblar la respuesta JSON
     response_data = {
         "metadata": {
-            "formula": "Multinomial",
+            "formula": "Simulación Multinomial",
             "parameters": {
-                "n": n, "k": k, "probabilities": probabilities, "category_labels": 0
+                "num_experiments": num_experiments, "num_trials": num_trials,
+                "probabilities": probabilities, "category_labels": labels
             }
         },
         "result": {
-            "probability": 0,
-            "sucesion": vectores,
-            "vector_counts": vector_counts_str
+            "total_experiments": num_experiments,
+            "unique_outcomes_count": len(vector_counts),
+            "most_frequent_outcome": {"vector": str(most_frequent[0]), "count": most_frequent[1]}
         },
+        # --- CAMBIO AQUÍ: La estructura de graph_data es ahora más simple ---
         "graph_data": {
-            "title": "Distribución Multinomial: Observado vs. Esperado",
-            "x_label": "Categorías", "y_label": "Frecuencia",
-            "labels": 0,
-            "datasets": [
-                {"label": "Frecuencia Observada", "data": k},
-                {"label": "Frecuencia Esperada", "data": 0}
-            ],
-            "title2":"Grafico de calor",
-            "dataset":cosas[1]
+            "title": "Frecuencia de Resultados de la Simulación (Top 20)",
+            "labels": bar_chart_labels, # Clave 'labels' para el eje Y
+            "data": bar_chart_data    # Clave 'data' para el eje X
         }
     }
+    
+    # Añadimos un print para que puedas verificar la nueva estructura en tu terminal de Django
+    print("DEBUG: Nueva estructura de graph_data:", response_data["graph_data"])
+
     return response_data
