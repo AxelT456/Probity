@@ -10,6 +10,25 @@ from .services.bernoulli_service import get_bernoulli_data
 from .services.multinomial_service import get_multinomial_data
 from .services.gibbs_service import get_gibbs_data
 from .services.normal_service import get_normal_cdf_data
+from .serializers import ExponencialInputSerializer
+from .services.exponencial_service import get_exponencial_data
+
+class ExponencialFormulaView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ExponencialInputSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            try:
+                # Llamamos a nuestra función principal del servicio
+                full_data = get_exponencial_data(
+                    n=validated_data['n'],
+                    l=validated_data['l']
+                )
+                return Response(full_data, status=status.HTTP_200_OK)
+            except ValueError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class BinomialFormulaView(APIView):
     def post(self, request, *args, **kwargs):

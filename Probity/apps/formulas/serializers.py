@@ -1,6 +1,17 @@
 from rest_framework import serializers
 import math
 
+class ExponencialInputSerializer(serializers.Serializer):
+    """
+    Este serializador valida los datos de entrada para la fórmula Exponencial.
+    """
+    n=serializers.IntegerField(min_value=1, help_text="Número de ensayos")
+    l=serializers.IntegerField(min_value=0, help_text="Lambda")
+    def validate(self, data):
+        if(data["l"]<=0):
+            raise serializers.ValidationError("lamda no debe ser 0")
+        return data
+
 class BinomialInputSerializer(serializers.Serializer):
     """
     Este serializador valida los datos de entrada para la fórmula binomial.
