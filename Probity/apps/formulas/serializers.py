@@ -2,15 +2,13 @@ from rest_framework import serializers
 import math
 
 class ExponencialInputSerializer(serializers.Serializer):
-    """
-    Este serializador valida los datos de entrada para la fórmula Exponencial.
-    """
-    n=serializers.IntegerField(min_value=1, help_text="Número de ensayos")
-    l=serializers.IntegerField(min_value=0, help_text="Lambda")
-    def validate(self, data):
-        if(data["l"]<=0):
-            raise serializers.ValidationError("lamda no debe ser 0")
-        return data
+    n = serializers.IntegerField(min_value=1, help_text="Número de simulaciones")
+    rate = serializers.FloatField(help_text="Tasa Lambda (λ), debe ser positiva")
+
+    def validate_rate(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("La tasa Lambda (λ) debe ser un número positivo.")
+        return value
 
 class BinomialInputSerializer(serializers.Serializer):
     """
@@ -26,7 +24,9 @@ class BinomialInputSerializer(serializers.Serializer):
         return data
     
 class NormalInputSerializer(serializers.Serializer):
-    z_score = serializers.FloatField()
+    mean = serializers.FloatField(help_text="Media (μ) de la distribución")
+    std_dev = serializers.FloatField(min_value=0.00001, help_text="Desviación estándar (σ), debe ser positiva")
+    x_value = serializers.FloatField(help_text="Punto X a evaluar")
 
 class BernoulliInputSerializer(serializers.Serializer):
     p = serializers.FloatField(min_value=0, max_value=1, help_text="Probabilidad de éxito")

@@ -1,67 +1,56 @@
 import numpy as np
-from scipy.stats import norm 
+from scipy.stats import norm
 
-def get_normal_standard_data(z_score: float) -> dict:
-    x_points = np.linspace(-4, 4, 401)
+def get_normal_distribution_data(mean: float, std_dev: float, x_value: float) -> dict:
+    """
+    Prepara el diccionario para una Distribución Normal General (no solo estándar).
+    """
+    # 1. Calcular los puntos para las curvas. El rango ahora es dinámico
+    # para centrarse alrededor de la media.
+    # Graficamos desde 4 desviaciones estándar a la izquierda hasta 4 a la derecha.
+    x_min = mean - (4 * std_dev)
+    x_max = mean + (4 * std_dev)
+    x_points = np.linspace(x_min, x_max, 401)
 
-    pdf_points = norm.pdf(x_points)
-    cdf_points = norm.cdf(x_points)
+    # 2. Calcular los valores de Y, pasando la media (loc) y la desviación (scale)
+    pdf_points = norm.pdf(x_points, loc=mean, scale=std_dev)
+    cdf_points = norm.cdf(x_points, loc=mean, scale=std_dev)
 
-    pdf_at_z = norm.pdf(z_score)
-    cdf_at_z = norm.cdf(z_score)
+    # 3. Calcular los valores específicos para el x_value del usuario
+    pdf_at_x = norm.pdf(x_value, loc=mean, scale=std_dev)
+    cdf_at_x = norm.cdf(x_value, loc=mean, scale=std_dev)
 
-    # 4. Ensamblar la respuesta JSON con la estructura exacta requerida
+    # 4. Ensamblar la respuesta JSON
     response_data = {
         "metadata": {
-            "formula": "Distribución Normal Estándar",
+            "formula": "Distribución Normal",
             "parameters": {
-                "z_score": z_score
+                "mean": mean,
+                "std_dev": std_dev,
+                "x_value": x_value
             }
         },
         "result": {
-            # Redondeamos para que coincida con el ejemplo del prompt
-            "pdf_at_z": round(pdf_at_z, 4),
-            "cdf_at_z": round(cdf_at_z, 4)
+            "pdf_at_x": round(pdf_at_x, 4),
+            "cdf_at_x": round(cdf_at_x, 4)
         },
         "graph_data": {
-            "title": "Función de Densidad y Distribución Normal Estándar",
+            "title": f"Distribución Normal (μ={mean}, σ={std_dev})",
             "datasets": [
                 {
-                    "label": "Densidad (PDF)",
-                    "type": "line",
-                    "x": x_points.tolist(), # Convertimos los arrays de numpy a listas
-                    "y": pdf_points.tolist()
+                    "label": "Densidad (PDF)", "type": "line",
+                    "x": x_points.tolist(), "y": pdf_points.tolist()
                 },
                 {
-                    "label": "Acumulada (CDF)",
-                    "type": "line",
-                    "x": x_points.tolist(),
-                    "y": cdf_points.tolist()
+                    "label": "Acumulada (CDF)", "type": "line",
+                    "x": x_points.tolist(), "y": cdf_points.tolist()
                 }
             ],
             "marker": {
-                "z": z_score,
-                "pdf": round(pdf_at_z, 4),
-                "cdf": round(cdf_at_z, 4)
+                "x": x_value,
+                "pdf": round(pdf_at_x, 4),
+                "cdf": round(cdf_at_x, 4)
             }
-        }
-    }
-    return response_data
-
-def get_normal_cdf_data(z_score: float) -> dict:
-    cdf_value = norm.cdf(z_score)
-    x_range = np.linspace(-4, 4, 401)
-    y_range_pdf = norm.pdf(x_range)
-
-    response_data = {
-        "metadata": {"formula": "Función de Distribución Acumulada (CDF) - Normal Estándar", "parameters": {"z_score": z_score}},
-        "result": {
-            "cdf": cdf_value,
-            "area_description": f"El {cdf_value:.2%} del área se encuentra a la izquierda de Z={z_score}"
-        },
-        "graph_data": {
-            "title": f"Área Acumulada para Z = {z_score}", "x_label": "Z-score", "y_label": "Densidad",
-            "x_range": x_range.tolist(), "y_range": y_range_pdf.tolist(), "shaded_area_limit": z_score
         }
     }
     return response_data
