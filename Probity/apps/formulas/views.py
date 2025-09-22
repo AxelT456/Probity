@@ -19,6 +19,9 @@ from .services.bernoulli_service import get_bernoulli_data
 from .services.multinomial_service import get_multinomial_data
 from .services.gibbs_service import get_gibbs_data
 from .services.exponencial_service import get_exponencial_data # Asegúrate de que este servicio exista
+from django.conf import settings
+
+print(settings.GEMINI_API_KEY)  # Para probar que sí lo carga
 
 # --- Vistas de la API ---
 
