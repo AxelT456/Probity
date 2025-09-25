@@ -5,7 +5,8 @@ from .views import (
     BernoulliFormulaView, 
     MultinomialFormulaView, 
     GibbsFormulaView,
-    ExponencialFormulaView 
+    ExponencialFormulaView,
+    BivariateNormalView
 )
 
 urlpatterns = [
@@ -16,5 +17,6 @@ urlpatterns = [
     path('multinomial/', MultinomialFormulaView.as_view(), name='multinomial-formula'),
     path('gibbs/', GibbsFormulaView.as_view(), name='gibbs-formula'),
     path('exponencial/', ExponencialFormulaView.as_view(), name='exponencial-formula'),
+    path('bivariate-normal/', BivariateNormalView.as_view(), name='bivariate-normal-formula'),
 
 ]
