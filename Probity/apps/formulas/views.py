@@ -9,7 +9,8 @@ from .serializers import (
     BernoulliInputSerializer,
     MultinomialInputSerializer,
     GibbsInputSerializer,
-    ExponencialInputSerializer # Asegúrate de que este exista en serializers.py
+    ExponencialInputSerializer, # Asegúrate de que este exista en serializers.py
+    BivariateNormalInputSerializer
 )
 
 # --- Importaciones de Services ---
@@ -19,6 +20,7 @@ from .services.bernoulli_service import get_bernoulli_data
 from .services.multinomial_service import get_multinomial_data
 from .services.gibbs_service import get_gibbs_data
 from .services.exponencial_service import get_exponencial_data # Asegúrate de que este servicio exista
+from .services.bivariate_normal_service import get_bivariate_normal_data
 from django.conf import settings
 
 print(settings.GEMINI_API_KEY)  # Para probar que sí lo carga
@@ -118,4 +120,16 @@ class ExponencialFormulaView(APIView):
             except ValueError as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class BivariateNormalView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = BivariateNormalInputSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            try:
+                full_data = get_bivariate_normal_data(**data) # Pasamos todos los datos directamente
+                return Response(full_data, status=status.HTTP_200_OK)
+            except ValueError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
