@@ -80,3 +80,24 @@ class GibbsInputSerializer(serializers.Serializer):
             raise serializers.ValidationError("'iteraciones' debe ser un entero positivo.")
         
         return data
+
+
+class BivariateNormalInputSerializer(serializers.Serializer):
+    mean_x = serializers.FloatField()
+    mean_y = serializers.FloatField()
+    std_dev_x = serializers.FloatField()
+    std_dev_y = serializers.FloatField()
+    correlation = serializers.FloatField(min_value=-1.0, max_value=1.0)
+    x_value = serializers.FloatField()
+    y_value = serializers.FloatField()
+    n_simulations = serializers.IntegerField(min_value=1, default=1000) 
+
+    def validate_std_dev_x(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("La desviación estándar debe ser positiva.")
+        return value
+
+    def validate_std_dev_y(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("La desviación estándar debe ser positiva.")
+        return value
